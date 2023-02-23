@@ -6,13 +6,13 @@ type IRepository interface {
 	AddExtraHour(extraHours domain.ExtraHour)
 	GetExtraHour(id int) *domain.ExtraHour
 
-	AddLocation(extraHours domain.Location)
-	GetLocation(name string) *domain.Location
+	AddPosition(position domain.Position)
+	GetPosition(name string) *domain.Position
 }
 
 type repository struct {
 	ExtraHours []domain.ExtraHour
-	Locations  []domain.Location
+	Positions  []domain.Position
 }
 
 func NewRepository() IRepository {
@@ -31,16 +31,16 @@ func (r *repository) GetExtraHour(id int) *domain.ExtraHour {
 	return nil
 }
 
-func (r *repository) AddLocation(location domain.Location) {
-	if r.GetLocation(location.Name) != nil {
+func (r *repository) AddPosition(position domain.Position) {
+	if r.GetPosition(position.Name) != nil {
 		return
 	}
-	r.Locations = append(r.Locations, location)
+	r.Positions = append(r.Positions, position)
 }
-func (r *repository) GetLocation(name string) *domain.Location {
-	for i := 0; i < len(r.Locations); i++ {
-		if r.Locations[i].Name == name {
-			return &r.Locations[i]
+func (r *repository) GetPosition(name string) *domain.Position {
+	for i := 0; i < len(r.Positions); i++ {
+		if r.Positions[i].Name == name {
+			return &r.Positions[i]
 		}
 	}
 	return nil

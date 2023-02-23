@@ -2,18 +2,23 @@ package handler
 
 import (
 	"bytes"
+	"devopegin/internal/domain"
 	"devopegin/internal/sunday"
 	"devopegin/pkg/web"
+	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
+	ErrFileInvalid  = errors.New("file is invalid")
 	ErrFileRequired = errors.New("file is required")
+	ErrJsonRequired = errors.New("json data is required")
+	ErrJsonData     = errors.New("json data is incorrect")
 	ErrInternal     = errors.New("an internal error has occurred")
 )
 
@@ -29,7 +34,8 @@ func NewSunday(service sunday.IService) *Sunday {
 
 func (s *Sunday) GenerateDoc() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		formFile, header, err := ctx.Request.FormFile("file")
+		//Get file
+		formFile, _, err := ctx.Request.FormFile("file")
 		if err != nil {
 			web.Error(ctx, http.StatusBadRequest, ErrFileRequired.Error())
 			return
@@ -41,8 +47,32 @@ func (s *Sunday) GenerateDoc() gin.HandlerFunc {
 		}
 		readerFile := bytes.NewReader(file)
 
-		s.sundayService.GenerateDocument(ctx, readerFile)
-
-		web.Success(ctx, http.StatusOK, fmt.Sprintf("'%s' uploaded!", header.Filename))
+		//Get Json Data
+		jsonString := ctx.Request.Form.Get("sundayForm")
+		if jsonString == "" {
+			web.Error(ctx, http.StatusBadRequest, ErrFileRequired.Error())
+			return
+		}
+		var sundayForm domain.SundayForm
+		err = json.Unmarshal([]byte(jsonString), &sundayForm)
+		if err != nil {
+			web.Error(ctx, http.StatusBadRequest, ErrJsonData.Error())
+			return
+		}
+		buffer, err := s.sundayService.GenerateDocument(ctx, readerFile, sundayForm)
+		if err != nil {
+			switch {
+			case errors.Is(err, sunday.ErrInvalidDocument):
+				web.Error(ctx, http.StatusBadRequest, ErrFileInvalid.Error())
+			default:
+				web.Error(ctx, http.StatusInternalServerError, ErrInternal.Error())
+			}
+			return
+		}
+		downloadName := time.Now().UTC().Format("data-20060102150405.xlsx")
+		ctx.Header("Content-Description", "File Transfer")
+		ctx.Header("Content-Disposition", "attachment; filename="+downloadName)
+		//ctx.Data(http.StatusOK, http.DetectContentType(buffer.Bytes()), buffer.Bytes())
+		ctx.Data(http.StatusOK, "application/octet-stream", buffer.Bytes())
 	}
 }
