@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	jsonparse "devopegin/pkg/customs/json_parse"
+	"time"
+)
 
 type Employee struct {
 	Name       string
@@ -21,10 +24,15 @@ type ExtraHour struct {
 }
 
 type SundayForm struct {
-	Month         string        `json:"month"`
-	Year          string        `json:"year"`
-	Responsible   Responsible   `json:"responsible"`
-	ImmediateBoss ImmediateBoss `json:"immediate_boss"`
+	Month               string               `json:"month"`
+	Year                string               `json:"year"`
+	Responsible         Responsible          `json:"responsible"`
+	ImmediateBoss       ImmediateBoss        `json:"immediate_boss"`
+	EntryTime           jsonparse.CustomTime `json:"entry_time"`
+	DepartureTime       jsonparse.CustomTime `json:"departure_time"`
+	SundayEntryTime     jsonparse.CustomTime `json:"entry_time_sunday"`
+	SundayDepartureTime jsonparse.CustomTime `json:"departure_time_sunday"`
+	Justification       string               `json:"justification"`
 }
 
 type Responsible struct {

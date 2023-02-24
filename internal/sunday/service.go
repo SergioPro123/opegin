@@ -42,6 +42,45 @@ var (
 			Style: 1,
 		},
 	}
+	FontWithBold = &excelize.Font{
+		Bold: true,
+		Size: 10,
+	}
+	FontWithoutBold = &excelize.Font{
+		Bold: false,
+		Size: 10,
+	}
+	FontWithBoldAndWhite = &excelize.Font{
+		Bold:  true,
+		Size:  10,
+		Color: "ffffff",
+	}
+	fillColorBlue = excelize.Fill{
+		Color:   []string{"#000066"},
+		Type:    "pattern",
+		Pattern: 1,
+	}
+
+	AlignmentDefault = &excelize.Alignment{
+		Horizontal: "center",
+		Vertical:   "center",
+		WrapText:   true,
+	}
+	AlignmentRight = &excelize.Alignment{
+		Horizontal: "right",
+		Vertical:   "center",
+		WrapText:   true,
+	}
+	AlignmentLeft = &excelize.Alignment{
+		Horizontal: "left",
+		Vertical:   "center",
+		WrapText:   true,
+	}
+	AlignmentLeft_Top = &excelize.Alignment{
+		Horizontal: "left",
+		Vertical:   "top",
+		WrapText:   true,
+	}
 )
 
 type IService interface {
@@ -198,7 +237,7 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 
 		//Set the width of the columns
 		var widthOdCol map[string]float64 = map[string]float64{
-			"A": 0.58, "B": 10.71, "C": 14.71, "D": 10.71, "E": 10.71, "F": 10.71, "G": 7.14, "H": 8.14, "I": 10.71,
+			"A": 0.58, "B": 10.71, "C": 14.71, "D": 10.71, "E": 10.71, "F": 10.71, "G": 8.14, "H": 8.14, "I": 10.71,
 			"J": 10.71, "K": 10.71, "L": 10.71, "M": 10.71, "N": 10.71, "O": 10.71, "P": 0.58}
 		for key, value := range widthOdCol {
 			err = doc.SetColWidth(nameSheet, key, key, value)
@@ -240,6 +279,7 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 
 		//Set the height of the rows
 		var heightRow map[int]float64 = map[int]float64{
+			12:                              5,
 			14:                              30.75,
 			(1 + 15 + totalColOfExtraHours): 20.25,
 			(2 + 15 + totalColOfExtraHours): 20.25,
@@ -256,29 +296,88 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 				return nil, ErrInternal
 			}
 		}
-
-		//Add borders
+		// *************************** Add Styles ***************************
+		//Add style to Title
 		style, err := doc.NewStyle(&excelize.Style{
-			Border: BorderDefauld,
+			Font: &excelize.Font{
+				Bold: true,
+				Size: 16},
+			Border:    BorderDefauld,
+			Alignment: AlignmentDefault,
 		})
-		var borderColumns map[string]string = map[string]string{
-			"B2":  "O4",
-			"B6":  "O12",
-			"B14": "O" + strconv.Itoa(4+14+totalColOfExtraHours),
+		err = doc.SetCellStyle(nameSheet, "B2", "M4", style)
+		if err != nil {
+			return nil, ErrInternal
 		}
-		for key, value := range borderColumns {
-			err = doc.SetCellStyle(nameSheet, key, value, style)
-			if err != nil {
-				return nil, ErrInternal
-			}
+		style, err = doc.NewStyle(&excelize.Style{
+			Font:      FontWithoutBold,
+			Border:    BorderDefauld,
+			Alignment: AlignmentRight,
+		})
+		err = doc.SetCellStyle(nameSheet, "N2", "O4", style)
+		if err != nil {
+			return nil, ErrInternal
+		}
+		//Add style to Header
+		style, err = doc.NewStyle(&excelize.Style{
+			Font:      FontWithBold,
+			Border:    BorderDefauld,
+			Alignment: AlignmentLeft,
+		})
+
+		err = doc.SetCellStyle(nameSheet, "B6", "O12", style)
+		if err != nil {
+			return nil, ErrInternal
+		}
+		//Add style to table header
+		style, err = doc.NewStyle(&excelize.Style{
+			Font:      FontWithBoldAndWhite,
+			Border:    BorderDefauld,
+			Fill:      fillColorBlue,
+			Alignment: AlignmentDefault,
+		})
+		err = doc.SetCellStyle(nameSheet, "B14", "O14", style)
+		if err != nil {
+			return nil, ErrInternal
+		}
+		//Add style to table content
+		style, err = doc.NewStyle(&excelize.Style{
+			Border:    BorderDefauld,
+			Alignment: AlignmentDefault,
+		})
+
+		err = doc.SetCellStyle(nameSheet, "B15", "O"+strconv.Itoa(14+totalColOfExtraHours), style)
+		if err != nil {
+			return nil, ErrInternal
+		}
+		//Add style to table footer
+		style, err = doc.NewStyle(&excelize.Style{
+			Border:    BorderDefauld,
+			Alignment: AlignmentLeft,
+			Font:      FontWithBold,
+		})
+
+		err = doc.SetCellStyle(nameSheet, "B"+strconv.Itoa(14+totalColOfExtraHours), "O"+strconv.Itoa(4+14+totalColOfExtraHours), style)
+		if err != nil {
+			return nil, ErrInternal
 		}
 
+		style, err = doc.NewStyle(&excelize.Style{
+			Border:    BorderDefauld,
+			Alignment: AlignmentLeft_Top,
+			Font:      FontWithBold,
+		})
+
+		err = doc.SetCellStyle(nameSheet, "B"+strconv.Itoa(15+totalColOfExtraHours), "O"+strconv.Itoa(3+15+totalColOfExtraHours), style)
+		if err != nil {
+			return nil, ErrInternal
+		}
 		// ******************************* Add values to cells *******************************
 		valuesCell := map[string]string{
-			//Title
+			//*Title
 			"D2": "Novedades de Trabajo Nocturno, Horas Extra, Trabajo Dominical y Festivo",
 			"N2": "Código: F-GA-06 \n Fecha: 08/02/17 \n Versión: 2",
-			//Header
+			//*Header
 			"B6":  "Mes: " + utils.CapitalizeWords(sundayForm.Month),
 			"E6":  "Año: " + utils.CapitalizeWords(sundayForm.Year),
 			"G6":  "Novedad Realizada por: " + utils.CapitalizeWords(sundayForm.Responsible.Name),
@@ -289,7 +388,7 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 			"B10": "Nombre de Jefe Inmediato: " + utils.CapitalizeWords(sundayForm.ImmediateBoss.Name),
 			"H10": "Localidad: " + utils.CapitalizeWords(sundayForm.ImmediateBoss.Location),
 			"L10": "Departamento: " + utils.CapitalizeWords(sundayForm.ImmediateBoss.Department),
-			//Table Extra Hours (Header)
+			//*Table Extra Hours (Header)
 			"B14": "Fecha",
 			"C14": "Hora de Entrada",
 			"D14": "Hora de Salida",
@@ -299,11 +398,28 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 			"H14": "Festivo",
 			"I14": "Justificación",
 			"M14": "Firma del Trabajador",
+			//*Table footer
+			"B" + strconv.Itoa((15 + totalColOfExtraHours)):     "*** Hora Diurna:  de 6:00 am a 10:00 pm",
+			"B" + strconv.Itoa((1 + 15 + totalColOfExtraHours)): "Observaciones:",
+			"B" + strconv.Itoa((3 + 15 + totalColOfExtraHours)): "VoBo Ingeniero  Residente - Coordinador Departamental:",
+			"I" + strconv.Itoa((3 + 15 + totalColOfExtraHours)): "VoBo Director Operativo:",
 		}
 		//Calculations are added according to your applied overtime
 		numberCellTable := 15
 		for _, extraHour := range employee.ExtraHours {
-			valuesCell["B"+strconv.Itoa(numberCellTable)] = extraHour.Date.Format("2006-01-02")
+			CellRowNumber := strconv.Itoa(numberCellTable)
+			valuesCell["B"+CellRowNumber] = extraHour.Date.Format("2006-01-02")
+			//is it sunday?
+			if extraHour.Date.Weekday() == 0 {
+				valuesCell["C"+CellRowNumber] = sundayForm.SundayEntryTime.Format("03:04 PM")
+				valuesCell["D"+CellRowNumber] = sundayForm.SundayDepartureTime.Format("03:04 PM")
+
+			} else {
+				valuesCell["C"+CellRowNumber] = sundayForm.EntryTime.Format("03:04 PM")
+				valuesCell["D"+CellRowNumber] = sundayForm.DepartureTime.Format("03:04 PM")
+			}
+
+			valuesCell["I"+CellRowNumber] = sundayForm.Justification
 
 			numberCellTable++
 		}
