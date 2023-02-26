@@ -23,13 +23,24 @@ type ExtraHour struct {
 	NumberOfHours int
 }
 
+type Sunday struct {
+	Month               string
+	Year                string
+	Responsible         Responsible
+	ImmediateBoss       ImmediateBoss
+	EntryTime           jsonparse.CustomTime
+	SundayEntryTime     jsonparse.CustomTime
+	SundayDepartureTime jsonparse.CustomTime
+	Justification       string
+	CompanyImage        []byte
+}
+
 type SundayForm struct {
 	Month               string               `json:"month"`
 	Year                string               `json:"year"`
 	Responsible         Responsible          `json:"responsible"`
 	ImmediateBoss       ImmediateBoss        `json:"immediate_boss"`
 	EntryTime           jsonparse.CustomTime `json:"entry_time"`
-	DepartureTime       jsonparse.CustomTime `json:"departure_time"`
 	SundayEntryTime     jsonparse.CustomTime `json:"entry_time_sunday"`
 	SundayDepartureTime jsonparse.CustomTime `json:"departure_time_sunday"`
 	Justification       string               `json:"justification"`

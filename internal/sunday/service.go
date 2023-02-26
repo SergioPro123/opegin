@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"strconv"
 	"time"
 
@@ -84,20 +85,24 @@ var (
 )
 
 type IService interface {
-	GenerateDocument(ctx *gin.Context, sundays io.Reader, sundayForm domain.SundayForm) (*bytes.Buffer, error)
+	GenerateDocument(ctx *gin.Context, sundays io.Reader, sundayForm domain.Sunday) (*bytes.Buffer, error)
 }
 
 type service struct {
-	repository IRepository
+	repository             IRepository
+	StartTimeForExtraHours time.Time
 }
 
 func NewService(repository IRepository) IService {
+	time, _ := time.Parse("15:04", "21:00")
 	return &service{
 		repository: repository,
+		//In Colombia, overtime is paid from 9 P.M.
+		StartTimeForExtraHours: time,
 	}
 }
 
-func (s *service) GenerateDocument(ctx *gin.Context, sundays io.Reader, sundayForm domain.SundayForm) (*bytes.Buffer, error) {
+func (s *service) GenerateDocument(ctx *gin.Context, sundays io.Reader, sundayForm domain.Sunday) (*bytes.Buffer, error) {
 	employees, err := s.LoadEmployeesFromExcel(sundays)
 	if err != nil {
 		return nil, err
@@ -217,7 +222,7 @@ func (s *service) LoadEmployeesFromExcel(sundays io.Reader) (employees []*domain
 	return employees, nil
 }
 
-func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayForm domain.SundayForm) (*bytes.Buffer, error) {
+func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayForm domain.Sunday) (*bytes.Buffer, error) {
 	doc := excelize.NewFile()
 
 	//Delete default sheet
@@ -225,6 +230,8 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 	if err != nil {
 		return nil, err
 	}
+	//Get difference hour between hour extra and hour pay legal
+	extraHourDifferenceToPay := GetDifferenceHours(s.StartTimeForExtraHours, sundayForm.EntryTime.Time)
 
 	for _, employee := range employees {
 		nameSheet := utils.GetFirstNameAndFirstLastName(employee.Name)
@@ -372,6 +379,15 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 		if err != nil {
 			return nil, ErrInternal
 		}
+		// ******************************* Add images to cells *******************************
+		err = doc.AddPictureFromBytes(nameSheet, "B2", "opegin", ".jpg", sundayForm.CompanyImage, &excelize.GraphicOptions{
+			AutoFit: true,
+			ScaleX:  1.7,
+			ScaleY:  0.9,
+		})
+		if err != nil {
+			return nil, ErrInternal
+		}
 		// ******************************* Add values to cells *******************************
 		valuesCell := map[string]string{
 			//*Title
@@ -413,10 +429,20 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 			if extraHour.Date.Weekday() == 0 {
 				valuesCell["C"+CellRowNumber] = sundayForm.SundayEntryTime.Format("03:04 PM")
 				valuesCell["D"+CellRowNumber] = sundayForm.SundayDepartureTime.Format("03:04 PM")
+				valuesCell["G"+CellRowNumber] = fmt.Sprintf("%.2f",
+					getHourFloat(sundayForm.SundayDepartureTime.Time)-getHourFloat(sundayForm.SundayEntryTime.Time))
 
 			} else {
 				valuesCell["C"+CellRowNumber] = sundayForm.EntryTime.Format("03:04 PM")
-				valuesCell["D"+CellRowNumber] = sundayForm.DepartureTime.Format("03:04 PM")
+				valuesCell["D"+CellRowNumber] = sundayForm.EntryTime.Add(time.Hour * time.Duration(extraHour.NumberOfHours)).Format("03:04 PM")
+
+				diferenceExtraHourMade := extraHourDifferenceToPay - float64(extraHour.NumberOfHours)
+				if diferenceExtraHourMade >= 0 {
+					valuesCell["E"+CellRowNumber] = strconv.Itoa(extraHour.NumberOfHours)
+				} else {
+					valuesCell["E"+CellRowNumber] = fmt.Sprintf("%.2f", extraHourDifferenceToPay)
+					valuesCell["F"+CellRowNumber] = fmt.Sprintf("%.2f", math.Abs(diferenceExtraHourMade))
+				}
 			}
 
 			valuesCell["I"+CellRowNumber] = sundayForm.Justification
@@ -434,4 +460,14 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 	}
 
 	return doc.WriteToBuffer()
+}
+
+func GetDifferenceHours(firstHour, secondHour time.Time) float64 {
+	return getHourFloat(firstHour) - getHourFloat(secondHour)
+}
+
+func getHourFloat(time time.Time) float64 {
+	firstHourInt := time.Hour()
+	firstMinuteInt := time.Minute()
+	return float64(firstHourInt) + (float64(firstMinuteInt) / 60.0)
 }

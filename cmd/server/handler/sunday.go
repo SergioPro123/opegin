@@ -7,8 +7,10 @@ import (
 	"devopegin/pkg/web"
 	"encoding/json"
 	"errors"
+	_ "image/png"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -59,7 +61,24 @@ func (s *Sunday) GenerateDoc() gin.HandlerFunc {
 			web.Error(ctx, http.StatusBadRequest, ErrJsonData.Error())
 			return
 		}
-		buffer, err := s.sundayService.GenerateDocument(ctx, readerFile, sundayForm)
+		//Get image from path
+		image, err := os.ReadFile("images/opegin.jpg")
+		if err != nil {
+			web.Error(ctx, http.StatusInternalServerError, ErrInternal.Error())
+			return
+		}
+
+		buffer, err := s.sundayService.GenerateDocument(ctx, readerFile, domain.Sunday{
+			Month:               sundayForm.Month,
+			Year:                sundayForm.Year,
+			Responsible:         sundayForm.Responsible,
+			ImmediateBoss:       sundayForm.ImmediateBoss,
+			EntryTime:           sundayForm.EntryTime,
+			SundayEntryTime:     sundayForm.SundayEntryTime,
+			SundayDepartureTime: sundayForm.SundayDepartureTime,
+			Justification:       sundayForm.Justification,
+			CompanyImage:        image,
+		})
 		if err != nil {
 			switch {
 			case errors.Is(err, sunday.ErrInvalidDocument):
