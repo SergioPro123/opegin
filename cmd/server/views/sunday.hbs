@@ -1,0 +1,284 @@
+<html lang='en'>
+
+    <head>
+
+        <meta charset='utf-8' />
+        <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <title>Opegin | Generar Doc</title>
+        <!-- CSS -->
+        <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500' />
+        <link rel='stylesheet' href='assets/bootstrap/css/bootstrap.css' />
+        <link rel='stylesheet' href='assets/font-awesome/css/font-awesome.min.css' />
+        <link rel='stylesheet' href='assets/css/form-elements.css' />
+        <link rel='stylesheet' href='assets/css/style.css' />
+
+        <style>
+            body::-webkit-scrollbar { width: 12px; background-color: #dddddd; } body::-webkit-scrollbar-thumb {
+            border-radius: 10px; -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3); background-color: #74655d; }
+        </style>
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- Favicon and touch icons -->
+        <link rel='shortcut icon' href='assets/ico/icono.png' />
+        <link
+            rel='apple-touch-icon-precomposed'
+            sizes='144x144'
+            href='assets/ico/apple-touch-icon-144-precomposed.png'
+        />
+        <link
+            rel='apple-touch-icon-precomposed'
+            sizes='114x114'
+            href='assets/ico/apple-touch-icon-114-precomposed.png'
+        />
+        <link rel='apple-touch-icon-precomposed' sizes='72x72' href='assets/ico/apple-touch-icon-72-precomposed.png' />
+        <link rel='apple-touch-icon-precomposed' href='assets/ico/apple-touch-icon-57-precomposed.png' />
+
+        <script src='https://kit.fontawesome.com/2c1a2069a8.js' crossorigin='anonymous'></script>
+    </head>
+
+    <body>
+
+        <!-- Top menu -->
+        <nav class='navbar navbar-inverse navbar-no-bg' role='navigation'>
+            <div class='container'>
+                <div class='navbar-header'>
+                    <button
+                        type='button'
+                        class='navbar-toggle collapsed'
+                        data-toggle='collapse'
+                        data-target='#top-navbar-1'
+                    >
+                        <span class='sr-only'>Toggle navigation</span>
+                        <span class='icon-bar'></span>
+                        <span class='icon-bar'></span>
+                        <span class='icon-bar'></span>
+                    </button>
+                    <a class='navbar-brand' href='index.php'><img src='assets/img/logo2.png' /></a>
+                </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class='collapse navbar-collapse' id='top-navbar-1'>
+                    <ul class='nav navbar-nav navbar-right'>
+                        <li>
+
+                            <span class='li-text'>
+                                Sígueme en:
+                            </span>
+                            <span class='li-social'>
+                                <a href='https://www.facebook.com/profile.php?id=100009478883132' target='_blank'><i
+                                        class='fab fa-facebook-f'
+                                    ></i></a>
+                                <a
+                                    href='https://instagram.com/hernandezsergiomauricio?igshid=g1xlw92f3ljb'
+                                    target='_blank'
+                                ><i class='fab fa-instagram'></i></a>
+                                <a href='https://github.com/SergioPro123' target='_blank'><i
+                                        class='fa fa-github'
+                                    ></i></a>
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Top content -->
+        <div class='top-content'>
+            <div class='container'>
+
+                <div class='row'>
+                    <div class='col-sm-8 col-sm-offset-2 text'>
+                        <h1>Dominicales Opegin</h1>
+                        <div class='description'>
+                            <p>
+                                Esta pagina esta diseña para ayudar a generar el documento de
+                                <strong>Dominicales</strong>
+                                para cada traajador.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='row'>
+                    <div class='col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-11 col-lg-offset-1 form-box'>
+                        <form id='form-generate-doc' role='form' method='get' class='f1' enctype='multipart/form-data'>
+
+                            <h3>Ingresa los archivos necesarios</h3>
+                            <p>Rellene el formulario para obtener su documento</p>
+
+                            <fieldset>
+                                <h4>Encabezado del excel:</h4>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='f1-date-doc'>Fecha del documento</label>
+                                        <input
+                                            class='form-control'
+                                            type='month'
+                                            id='f1-date-doc'
+                                            name='f1-date-doc'
+                                            value='2023-03'
+                                            required
+                                        />
+                                    </div>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='entry_time'>Hora de entrada (Hora extras) </label>
+                                        <input
+                                            class='form-control'
+                                            type='time'
+                                            id='entry_time'
+                                            name='entry_time'
+                                            required
+                                            value='17:30'
+                                        />
+                                    </div>
+                                </div>
+
+                                <h4>Horario en dias dominicales:</h4>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='entry_time_sunday'>Hora de entrada</label>
+                                        <input
+                                            class='form-control'
+                                            type='time'
+                                            id='entry_time_sunday'
+                                            name='entry_time_sunday'
+                                            required
+                                            value='07:00'
+                                        />
+                                    </div>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='departure_time_sunday'>Hora de salida</label>
+                                        <input
+                                            class='form-control'
+                                            type='time'
+                                            id='departure_time_sunday'
+                                            name='departure_time_sunday'
+                                            required
+                                            value='15:00'
+                                        />
+                                    </div>
+                                </div>
+
+                                <h4>Responsable:</h4>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='responsible_name'>Nombre completo</label>
+                                        <input
+                                            type='text'
+                                            name='responsible_name'
+                                            placeholder='Nombre del responsable'
+                                            class='form-control'
+                                            id='responsible_name'
+                                            value='YURITZA MENDOZA GALVAN'
+                                            required
+                                        />
+                                    </div>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='responsible_position'>Cargo</label>
+                                        <input
+                                            type='text'
+                                            name='responsible_position'
+                                            placeholder='Cargo del responsable'
+                                            class='form-control'
+                                            id='responsible_position'
+                                            value='SUPERVISOR RR-HH'
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <h4>Jefe inmediato:</h4>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-12'>
+                                        <label class='' for='immediate_boss_name'>Nombre completo</label>
+                                        <input
+                                            type='text'
+                                            name='immediate_boss_name'
+                                            placeholder='Nombre del jefe inmediato'
+                                            class='form-control'
+                                            id='immediate_boss_name'
+                                            value='JHON HENRY MONTILLA COMETA'
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='immediate_boss_location'>Localidad</label>
+                                        <input
+                                            type='text'
+                                            name='immediate_boss_location'
+                                            placeholder='Localidad del jefe inmediato'
+                                            class='form-control'
+                                            id='immediate_boss_location'
+                                            value='PLANTA EXTERNA'
+                                            required
+                                        />
+                                    </div>
+                                    <div class='form-group col-md-6'>
+                                        <label class='' for='immediate_boss_department'>Departamento</label>
+                                        <input
+                                            type='text'
+                                            name='immediate_boss_department'
+                                            placeholder='Departamento del jefe inmediato'
+                                            class='form-control'
+                                            id='immediate_boss_department'
+                                            value='Santander'
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <h4>Archivo Excel - Empleados:</h4>
+                                <div class='form-row'>
+                                    <div class='form-group col-md-126'>
+                                        <label class='' for='file_employee'>Nombre completo</label>
+                                        <input
+                                            type='file'
+                                            accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                                            name='file_employee'
+                                            placeholder='Nombre del responsable'
+                                            class='form-control'
+                                            id='file_employee'
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div class='f1-buttons'>
+                                    <button type='submit' id='bt-generate-doc' class='btn btn-submit'>Generar</button>
+                                </div>
+                            </fieldset>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class='modal fade bd-example-modal-lg' data-backdrop='static' data-keyboard='false' tabindex='-1'>
+            <div class='modal-dialog modal-sm'>
+                <div class='modal-content' style='width: 48px'>
+                    <span class='fa fa-spinner fa-spin fa-3x'></span>
+                </div>
+            </div>
+        </div>
+        <!-- Javascript -->
+        <script src='assets/js/jquery-2.2.4.min.js'></script>
+        <script src='assets/bootstrap/js/bootstrap.min.js'></script>
+        <script src='assets/js/jquery.backstretch.min.js'></script>
+        <script src='assets/js/retina-1.1.0.min.js'></script>
+        <script src='assets/js/scripts.js'></script>
+        <script src='assets/js/consume-api.js'></script>
+        <!-- bs-custom-file-input -->
+        <script src='assets/js/bs-custom-file-input.min.js'></script>
+        <!--[if lt IE 10]>
+            <script src="assets/js/placeholder.js"></script>
+        <![endif]-->
+
+    </body>
+
+</html>

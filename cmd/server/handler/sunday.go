@@ -95,3 +95,10 @@ func (s *Sunday) GenerateDoc() gin.HandlerFunc {
 		ctx.Data(http.StatusOK, "application/octet-stream", buffer.Bytes())
 	}
 }
+func (s *Sunday) GetView() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "sunday.hbs", gin.H{
+			"Prueba": "Hola",
+		})
+	}
+}

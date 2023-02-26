@@ -10,6 +10,9 @@ func main() {
 
 	eng := gin.Default()
 
+	eng.Static("/assets", "./public/assets")
+	eng.LoadHTMLGlob("views/*.hbs")
+
 	router := routes.NewRouter(eng)
 	router.MapRoutes()
 

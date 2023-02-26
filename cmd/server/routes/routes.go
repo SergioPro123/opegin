@@ -37,4 +37,5 @@ func (r *router) buildGenerateSunday() {
 	service := sunday.NewService(repo)
 	handler := handler.NewSunday(service)
 	r.rg.POST("/sundays", handler.GenerateDoc())
+	r.eng.GET("/sundays", handler.GetView())
 }
