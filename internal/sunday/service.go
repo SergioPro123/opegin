@@ -444,8 +444,12 @@ func (s *service) EmployeesToExcelCalculed(employees []*domain.Employee, sundayF
 					valuesCell["F"+CellRowNumber] = fmt.Sprintf("%.2f", math.Abs(diferenceExtraHourMade))
 				}
 			}
-
-			valuesCell["I"+CellRowNumber] = sundayForm.Justification
+			for _, justification := range sundayForm.Justification {
+				if extraHour.Date.Month() == time.Month(justification.NumberMonth) {
+					valuesCell["I"+CellRowNumber] = justification.Description
+					break
+				}
+			}
 
 			numberCellTable++
 		}

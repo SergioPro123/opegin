@@ -31,7 +31,7 @@ type Sunday struct {
 	EntryTime           jsonparse.CustomTime
 	SundayEntryTime     jsonparse.CustomTime
 	SundayDepartureTime jsonparse.CustomTime
-	Justification       string
+	Justification       []JustificationMonth
 	CompanyImage        []byte
 }
 
@@ -43,7 +43,7 @@ type SundayForm struct {
 	EntryTime           jsonparse.CustomTime `json:"entry_time"`
 	SundayEntryTime     jsonparse.CustomTime `json:"entry_time_sunday"`
 	SundayDepartureTime jsonparse.CustomTime `json:"departure_time_sunday"`
-	Justification       string               `json:"justification"`
+	Justification       []JustificationMonth `json:"justification"`
 }
 
 type Responsible struct {
@@ -54,4 +54,9 @@ type ImmediateBoss struct {
 	Name       string `json:"name"`
 	Location   string `json:"location"`
 	Department string `json:"department"`
+}
+
+type JustificationMonth struct {
+	Description string `json:"description"`
+	NumberMonth int    `json:"number_month"`
 }

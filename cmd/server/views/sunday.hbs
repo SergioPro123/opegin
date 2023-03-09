@@ -233,10 +233,57 @@
                                         />
                                     </div>
                                 </div>
+                                <h4>Justificación:</h4>
+
+                                <div class='form-group'>
+                                    <div class='form-group col-md-3'>
+                                        <label class='' for='justification_month_1'>Mes</label>
+                                        <select
+                                            name='justification_month_1'
+                                            id='justification_month_1'
+                                            class='form-control'
+                                        >
+                                            <option value=''>--Selecione el mes--</option>
+                                            <option value='01'>Enero</option>
+                                            <option value='02'>Febrero</option>
+                                            <option value='03'>Marzo</option>
+                                            <option value='04'>Abril</option>
+                                            <option value='05'>Mayo</option>
+                                            <option value='06'>Junio</option>
+                                            <option value='07'>Julio</option>
+                                            <option value='08'>Agosto</option>
+                                            <option value='09'>Septiembre</option>
+                                            <option value='10'>Octubre</option>
+                                            <option value='11'>Noviembre</option>
+                                            <option value='12'>Diciembre</option>
+                                        </select>
+                                    </div>
+                                    <div class='form-group col-md-8'>
+                                        <label class='' for='justification_description_1'>Descripción</label>
+                                        <textarea
+                                            class='form-control'
+                                            id='justification_description_1'
+                                            name='justification_description_1'
+                                            rows='3'
+                                        ></textarea>
+                                    </div>
+                                </div>
+
+                                <div id='new_justification'></div>
+                                <div class='form-group'>
+                                    <div class='form-group col justify-content-md-center text-center'>
+                                        <button
+                                            id='add_justification'
+                                            type='button'
+                                            class='btn btn-info form-control'
+                                        >Agregar justificación</button>
+
+                                    </div>
+                                </div>
                                 <h4>Archivo Excel - Empleados:</h4>
                                 <div class='form-row'>
-                                    <div class='form-group col-md-126'>
-                                        <label class='' for='file_employee'>Nombre completo</label>
+                                    <div class='form-group col-md-12'>
+                                        <label class='' for='file_employee'>Archivo</label>
                                         <input
                                             type='file'
                                             accept='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -248,6 +295,7 @@
                                         />
                                     </div>
                                 </div>
+
                                 <div class='f1-buttons'>
                                     <button type='submit' id='bt-generate-doc' class='btn btn-submit'>Generar</button>
                                 </div>
