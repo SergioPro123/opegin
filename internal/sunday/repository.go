@@ -3,7 +3,7 @@ package sunday
 import "devopegin/internal/domain"
 
 type IRepository interface {
-	AddExtraHour(extraHours domain.ExtraHour)
+	AddExtraHour(extraHours domain.ExtraHour) *domain.ExtraHour
 	GetExtraHour(id int) *domain.ExtraHour
 
 	AddPosition(position domain.Position)
@@ -19,8 +19,14 @@ func NewRepository() IRepository {
 	return &repository{}
 }
 
-func (r *repository) AddExtraHour(extraHours domain.ExtraHour) {
+func (r *repository) AddExtraHour(extraHours domain.ExtraHour) *domain.ExtraHour {
+	for i := 0; i < len(r.ExtraHours); i++ {
+		if r.ExtraHours[i].Date == extraHours.Date && r.ExtraHours[i].NumberOfHours == extraHours.NumberOfHours {
+			return &r.ExtraHours[i]
+		}
+	}
 	r.ExtraHours = append(r.ExtraHours, extraHours)
+	return &extraHours
 }
 func (r *repository) GetExtraHour(id int) *domain.ExtraHour {
 	for i := 0; i < len(r.ExtraHours); i++ {

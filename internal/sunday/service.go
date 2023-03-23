@@ -18,6 +18,8 @@ import (
 var (
 	ErrInvalidDocument = errors.New("the document does not meet the conditions to be processed")
 	ErrInternal        = errors.New("an internal error has occurred")
+
+	startColHours = 4
 )
 
 var (
@@ -140,32 +142,10 @@ func (s *service) LoadEmployeesFromExcel(sundays io.Reader) (employees []*domain
 		fmt.Println(err)
 		return []*domain.Employee{}, ErrInternal
 	}
-	//Iterates over all dates y save in repository
-	rowDates := rows[1][4:]
-	countDates := 1
-	for i := 0; i < len(rowDates); i++ {
-		//the date is parsed
-		date, err := time.Parse("01-02-06", rowDates[i])
-		if err != nil {
-			return []*domain.Employee{}, ErrInvalidDocument
-		}
-		//the time is parsed
-		hour, err := strconv.Atoi(rowDates[i+1])
-		if err != nil {
-			return []*domain.Employee{}, ErrInvalidDocument
-		}
-		//Save in repository
-		s.repository.AddExtraHour(domain.ExtraHour{
-			ID:            countDates,
-			Date:          date,
-			NumberOfHours: hour,
-		})
-		i++ //x2 (this + for)
-		countDates++
-	}
 
 	//Each employee iterates
-	rowsEmployees := rows[2:]
+	rowsEmployees := rows[1:]
+	countHoursExtrasTotal := 1
 	for _, rowEmployee := range rowsEmployees {
 		var employee *domain.Employee = &domain.Employee{}
 		employees = append(employees, employee)
@@ -176,19 +156,7 @@ func (s *service) LoadEmployeesFromExcel(sundays io.Reader) (employees []*domain
 		employee.Name = rowEmployee[1]
 		//check if locality exists, if not then insert
 		namePosition := rowEmployee[2]
-		//Get group from employee
-		group := 0
-		if len(rowEmployee) >= 4 {
-			if rowEmployee[3] == "" {
-				rowEmployee[3] = "0"
-			}
-			group, err = strconv.Atoi(rowEmployee[3])
-			if err != nil {
-				return []*domain.Employee{}, ErrInvalidDocument
-			}
-		}
 
-		employee.Group = group
 		location := s.repository.GetPosition(namePosition)
 		if location == nil {
 			s.repository.AddPosition(domain.Position{
@@ -200,23 +168,42 @@ func (s *service) LoadEmployeesFromExcel(sundays io.Reader) (employees []*domain
 		employee.Position = location
 		//iterates over the overtime applied
 		employee.ExtraHours = []*domain.ExtraHour{}
-		if !(len(rowEmployee) >= 5) {
+		if !(len(rowEmployee) >= startColHours) {
 			continue
 		}
-		rowApplied := rowEmployee[4:]
-		countApplied := 1
+		rowApplied := rowEmployee[startColHours-1:]
 		for i := 0; i < len(rowApplied); i++ {
 			//If it is different from empty, then it is because overtime applies
 			if rowApplied[i] != "" {
-				extraHour := s.repository.GetExtraHour(countApplied)
+				//Find date from extra hour
+				cols, err := doc.GetCols(firstSheetName)
+				if err != nil {
+					fmt.Println(err)
+					return []*domain.Employee{}, ErrInternal
+				}
+				colDate := cols[startColHours-1+i][0]
+				//the date is parsed
+				date, err := time.Parse("01-02-06", colDate)
+				if err != nil {
+					return []*domain.Employee{}, ErrInvalidDocument
+				}
+				//the hour is parsed
+				hour, err := strconv.Atoi(rowApplied[i])
+				if err != nil {
+					return []*domain.Employee{}, ErrInvalidDocument
+				}
+
+				extraHour := s.repository.AddExtraHour(domain.ExtraHour{
+					ID:            countHoursExtrasTotal,
+					Date:          date,
+					NumberOfHours: hour,
+				})
 				if extraHour == nil {
 					return []*domain.Employee{}, ErrInternal
 				}
 				employee.ExtraHours = append(employee.ExtraHours, extraHour)
+				countHoursExtrasTotal++
 			}
-			//the next item is ignored due to the merged cell
-			i++ //x2 (this + for)
-			countApplied++
 		}
 	}
 	return employees, nil
